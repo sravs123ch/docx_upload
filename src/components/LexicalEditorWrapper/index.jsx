@@ -43,53 +43,54 @@ import {
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import TableResizePlugin from "../CustomPlugins/TableResizePlugin";
 import TableActionMenuPlugin from "../CustomPlugins/TableActionMenuPlugin";
+import { $generateNodesFromDOM } from "@lexical/html";
+import PageBreakPlugin from "../CustomPlugins/PageBreakPlugin";
+import FontPlugin from "../CustomPlugins/FontPlugin";
+import "./editor.css";
 
 function LexicalEditorWrapper(props) {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Function to handle importing from URL
-  const handleImportFromUrl = async (url) => {
+	// Function to handle DOCX download
+	const handleDownloadDocx = async (editor) => {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`http://localhost:3001/api/convert-docx-to-html?url=${encodeURIComponent(url)}`);
-      
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || 'Conversion failed');
-      }
-
-      // Update Lexical editor with the converted HTML
-      const [editor] = useLexicalComposerContext();
-      editor.update(() => {
-        const parser = new DOMParser();
-        const dom = parser.parseFromString(result.html, 'text/html');
-        const nodes = $generateNodesFromDOM(editor, dom);
+      const editorState = editor.getEditorState();
+      const htmlString = editorState.read(() => {
         const root = $getRoot();
-        root.clear();
-        if (Array.isArray(nodes) && nodes.length > 0) {
-          root.append(...nodes);
-        }
+        return root.getTextContent(); // This is a simplified version
+      });
+
+      // Create a simple DOCX document
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: htmlString,
+                  size: 24,
+                }),
+              ],
+            }),
+          ],
+        }],
+      });
+
+      const buffer = await Packer.toBuffer(doc);
+      const blob = new Blob([buffer], { 
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
       });
       
+      saveAs(blob, "document.docx");
     } catch (error) {
-      console.error('Error importing from URL:', error);
-      alert(`Error importing from URL: ${error.message}`);
+      console.error('Error exporting DOCX:', error);
+      alert(`Error exporting DOCX: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
-  };
-
-	// Function to handle DOCX download
-	const handleDownloadDocx = async (editor) => {
-    // ... (keep the existing handleDownloadDocx function unchanged)
-    // This function is quite long, so I'm not reproducing it here
-    // but it should remain exactly as it was in your original code
 	};
 
   return (
@@ -107,7 +108,6 @@ function LexicalEditorWrapper(props) {
       >
         <LexicalEditorTopBar 
           onDownloadDocx={handleDownloadDocx} 
-          onImportFromUrl={handleImportFromUrl} 
         />
       </Box>
 
@@ -164,10 +164,17 @@ function LexicalEditorWrapper(props) {
           <LinkPlugin />
           <ImagesPlugin captionsEnabled={false} />
           <FloatingTextFormatToolbarPlugin />
+          <ColorPlugin />
+          <FontPlugin />
           <TablePlugin />
           <TableResizePlugin />
           <TableActionMenuPlugin />
+          <PageBreakPlugin />
           <MyCustomAutoFocusPlugin />
+          <OnChangePlugin onChange={(editorState) => {
+            // Optional: Log changes for debugging
+            // console.log('Editor state changed:', editorState);
+          }} />
         </Box>
       </Box>
     </LexicalComposer>

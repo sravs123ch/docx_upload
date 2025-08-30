@@ -1,0 +1,216 @@
+/* Enhanced editor styles for DOCX import formatting preservation */
+
+.editor-container,
+.editor-content,
+.lexical-editor {
+  color: inherit !important;
+}
+
+/* Preserve all imported styles */
+.editor-container * {
+  color: inherit !important;
+}
+
+/* Force preservation of inline color styles */
+.editor-container [style*="color:"] {
+  color: revert !important;
+}
+
+.editor-container [style*="background-color:"] {
+  background-color: revert !important;
+}
+
+.editor-container [style*="font-size:"] {
+  font-size: revert !important;
+}
+
+.editor-container [style*="font-weight:"] {
+  font-weight: revert !important;
+}
+
+.editor-container [style*="font-family:"] {
+  font-family: revert !important;
+}
+
+/* Imported DOCX content specific styles */
+.imported-docx-content * {
+  color: inherit !important;
+}
+
+.imported-docx-content [data-original-color] {
+  color: var(--original-color) !important;
+}
+
+.imported-docx-content [data-text-color] {
+  color: var(--text-color) !important;
+}
+
+/* Ensure headings preserve their formatting */
+.editor-container h1,
+.editor-container h2,
+.editor-container h3,
+.editor-container h4,
+.editor-container h5,
+.editor-container h6 {
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  margin: inherit !important;
+}
+
+.editor-container h1[style],
+.editor-container h2[style],
+.editor-container h3[style],
+.editor-container h4[style],
+.editor-container h5[style],
+.editor-container h6[style] {
+  all: revert !important;
+}
+
+/* Preserve paragraph formatting */
+.editor-container p {
+  color: inherit !important;
+  font-size: inherit !important;
+  margin: inherit !important;
+}
+
+.editor-container p[style] {
+  all: revert !important;
+}
+
+/* Preserve span formatting */
+.editor-container span {
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+}
+
+.editor-container span[style] {
+  all: revert !important;
+}
+
+/* Table formatting preservation */
+.editor-container table {
+  border-collapse: collapse !important;
+  color: inherit !important;
+  width: 100% !important;
+  margin: 16px 0 !important;
+}
+
+.editor-container td,
+.editor-container th {
+  border: 1px solid #ccc !important;
+  padding: 8px !important;
+  color: inherit !important;
+  vertical-align: top !important;
+}
+
+.editor-container td[style],
+.editor-container th[style] {
+  all: revert !important;
+}
+
+/* Text formatting elements */
+.editor-container strong,
+.editor-container b {
+  font-weight: bold !important;
+  color: inherit !important;
+}
+
+.editor-container em,
+.editor-container i {
+  font-style: italic !important;
+  color: inherit !important;
+}
+
+.editor-container u {
+  text-decoration: underline !important;
+  color: inherit !important;
+}
+
+/* Image preservation and styling */
+.editor-container img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 16px auto !important;
+}
+
+.editor-container img[style] {
+  width: revert !important;
+  height: revert !important;
+  max-width: 100% !important;
+}
+
+/* List formatting */
+.editor-container ul,
+.editor-container ol {
+  margin: 16px 0 !important;
+  padding-left: 32px !important;
+}
+
+.editor-container li {
+  margin: 4px 0 !important;
+}
+
+/* Preserve all inline styles with highest specificity */
+.editor-container *[style*="color: rgb("] {
+  color: revert-layer !important;
+}
+
+.editor-container *[style*="color:rgb("] {
+  color: revert-layer !important;
+}
+
+.editor-container *[style*="background-color: rgb("] {
+  background-color: revert-layer !important;
+}
+
+.editor-container *[style*="font-size:"] {
+  font-size: revert-layer !important;
+}
+
+.editor-container *[style*="font-weight:"] {
+  font-weight: revert-layer !important;
+}
+
+.editor-container *[style*="font-family:"] {
+  font-family: revert-layer !important;
+}
+
+/* Ensure proper spacing for imported content */
+.editor-container > * {
+  margin-bottom: 16px;
+}
+
+.editor-container > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Page break styling */
+.page-break {
+  page-break-before: always;
+  break-before: page;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #999;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.page-break::before,
+.page-break::after {
+  content: '';
+  flex: 1;
+  border-top: 1px dashed #ccc;
+}
+
+.page-break::before {
+  margin-right: 10px;
+}
+
+.page-break::after {
+  margin-left: 10px;
+}

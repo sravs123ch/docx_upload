@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createContext } from "react";
 import {
   Button,
   IconButton,
@@ -20,13 +21,53 @@ import {
 } from "@lexical/table";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { $getSelection, $isRangeSelection } from "lexical";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 
+export const CellContext = createContext({
+  cellEditorConfig: null,
+  cellEditorPlugins: null,
+});
+
+function CellEditor() {
+  return (
+    <>
+      <RichTextPlugin
+        contentEditable={
+          <ContentEditable className="TableNode__contentEditable" />
+        }
+        placeholder={
+          <div className="TableNode__placeholder">Enter some text...</div>
+        }
+        ErrorBoundary={LexicalErrorBoundary}
+      />
+      <HistoryPlugin />
+    </>
+  );
+}
 export default function TablePlugin() {
   const [isOpen, setIsOpen] = useState(false);
   const [rows, setRows] = useState("");
   const [columns, setColumns] = useState("");
   const [editor] = useLexicalComposerContext();
 
+  const cellEditorConfig = {
+    namespace: "TableCellEditor",
+    theme: {
+      paragraph: "editor-paragraph",
+      text: {
+        bold: "editor-text-bold",
+        italic: "editor-text-italic",
+        underline: "editor-text-underline",
+      },
+    },
+    onError: (error) => {
+      console.error("Cell editor error:", error);
+    },
+    nodes: [],
+  };
   const onAddTable = () => {
     if (!rows || !columns) return;
     
@@ -49,7 +90,12 @@ export default function TablePlugin() {
   };
 
   return (
-    <>
+    <CellContext.Provider
+      value={{
+        cellEditorConfig,
+        cellEditorPlugins: <CellEditor />,
+      }}
+    >
       <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
         <DialogTitle>Add Table</DialogTitle>
         <DialogContent>
@@ -91,6 +137,6 @@ export default function TablePlugin() {
         <TableChartIcon style={{ color: "black" }} />
       </IconButton>
 
-    </>
+    </CellContext.Provider>
   );
 }

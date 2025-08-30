@@ -50,6 +50,15 @@ async function convertDocxToHtml(filePath) {
   if (!fs.existsSync(imageDir)) fs.mkdirSync(imageDir, { recursive: true });
 
   const result = await mammoth.convertToHtml({ path: filePath }, {
+    styleMap: [
+      "p[style-name='Heading 1'] => h1:fresh",
+      "p[style-name='Heading 2'] => h2:fresh",
+      "p[style-name='Heading 3'] => h3:fresh",
+      "p[style-name='Title'] => h1.title:fresh",
+      "p[style-name='Subtitle'] => h2.subtitle:fresh",
+    ],
+    includeDefaultStyleMap: true,
+    preserveEmptyParagraphs: true,
     convertImage: mammoth.images.imgElement(function (image) {
       return image.read("base64").then((imageBuffer) => {
         const imageName = `image-${Date.now()}-${Math.floor(Math.random() * 10000)}.png`;
@@ -61,9 +70,34 @@ async function convertDocxToHtml(filePath) {
         return { src: `/uploads/images/${imageName}` };
       });
     }),
+    transformDocument: mammoth.transforms.paragraph(function(element) {
+      // Preserve paragraph spacing and formatting
+      if (element.styleId) {
+        element.styleName = element.styleId;
+      }
+      return element;
+    }),
   });
 
-  return result.value; // HTML string
+  // Post-process the HTML to enhance table formatting
+  let processedHtml = result.value;
+  
+  // Enhance table styling
+  processedHtml = processedHtml.replace(
+    /<table/g, 
+    '<table style="border-collapse: collapse; width: 100%; margin: 16px 0;"'
+  );
+  
+  processedHtml = processedHtml.replace(
+    /<td/g, 
+    '<td style="border: 1px solid #ccc; padding: 8px; vertical-align: top;"'
+  );
+  
+  processedHtml = processedHtml.replace(
+    /<th/g, 
+    '<th style="border: 1px solid #ccc; padding: 8px; background-color: #f5f5f5; font-weight: bold; vertical-align: top;"'
+  );
+  return processedHtml; // Enhanced HTML string
 }
 
 // POST upload & convert

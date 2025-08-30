@@ -6,6 +6,7 @@ import { TableNode, TableCellNode, TableRowNode } from "@lexical/table";
 import { ListNode, ListItemNode } from "@lexical/list";
 import { ImageNode } from "../components/CustomNodes/ImageNode";
 import { PageBreakNode } from "../components/CustomNodes/PageBreakNode";
+import { TableNode as CustomTableNode } from "../components/CustomNodes/TableNode/TableNode";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -29,9 +30,11 @@ export const lexicalEditorConfig = {
     TableNode,
     TableCellNode,
     TableRowNode,
+    CustomTableNode,
     AutoLinkNode,
     LinkNode,
     ImageNode,
-    PageBreakNode
+    PageBreakNode,
   ],
+  editorState: null,
 };

@@ -11,6 +11,31 @@ const LexicalEditorTopBar = ({ onDownloadDocx, onImportFromUrl }) => {
   const [urlValue, setUrlValue] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
 
+  // Enhanced HTML processing to preserve formatting
+  const processImportedHTML = (htmlString) => {
+    // Create a temporary container to process the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+    
+    // Process images to ensure they have proper URLs
+    const images = tempDiv.querySelectorAll('img');
+    images.forEach(img => {
+      const src = img.getAttribute('src');
+      if (src && src.startsWith('/uploads/images/')) {
+        // Convert relative URLs to absolute URLs for the backend
+        img.setAttribute('src', `http://localhost:3001${src}`);
+      }
+    });
+    
+    // Preserve all inline styles by adding data attributes
+    const elementsWithStyle = tempDiv.querySelectorAll('[style]');
+    elementsWithStyle.forEach(element => {
+      const style = element.getAttribute('style');
+      element.setAttribute('data-original-style', style);
+    });
+    
+    return tempDiv.innerHTML;
+  };
   const handleImportDocx = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -36,10 +61,13 @@ const LexicalEditorTopBar = ({ onDownloadDocx, onImportFromUrl }) => {
         throw new Error(result.error || 'Conversion failed');
       }
 
+      // Process the HTML to preserve formatting
+      const processedHTML = processImportedHTML(result.html);
+
       // Update Lexical editor with the converted HTML
       editor.update(() => {
         const parser = new DOMParser();
-        const dom = parser.parseFromString(result.html, 'text/html');
+        const dom = parser.parseFromString(processedHTML, 'text/html');
         const nodes = $generateNodesFromDOM(editor, dom);
         const root = $getRoot();
         root.clear();
@@ -81,10 +109,13 @@ const LexicalEditorTopBar = ({ onDownloadDocx, onImportFromUrl }) => {
         throw new Error(result.error || 'Conversion failed');
       }
 
+      // Process the HTML to preserve formatting
+      const processedHTML = processImportedHTML(result.html);
+
       // Update Lexical editor with the converted HTML
       editor.update(() => {
         const parser = new DOMParser();
-        const dom = parser.parseFromString(result.html, 'text/html');
+        const dom = parser.parseFromString(processedHTML, 'text/html');
         const nodes = $generateNodesFromDOM(editor, dom);
         const root = $getRoot();
         root.clear();
@@ -146,8 +177,9 @@ const LexicalEditorTopBar = ({ onDownloadDocx, onImportFromUrl }) => {
           sx={{ ml: 1 }}
           variant="contained"
           onClick={() => onDownloadDocx(editor)}
+          disabled={isLoading}
         >
-          Export DOCX
+          {isLoading ? 'Exporting...' : 'Export DOCX'}
         </Button>
       </Grid>
       
