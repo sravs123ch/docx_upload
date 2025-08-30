@@ -1,0 +1,168 @@
+/* Add this to your editor.css file */
+
+/* Base editor styling to preserve imported formatting */
+.editor-container,
+.editor-content,
+.lexical-editor {
+  color: inherit !important;
+}
+
+/* Preserve all imported styles */
+.editor-container * {
+  color: inherit !important;
+}
+
+/* Force preservation of inline color styles */
+.editor-container [style*="color:"] {
+  color: revert !important;
+}
+
+.editor-container [style*="background-color:"] {
+  background-color: revert !important;
+}
+
+.editor-container [style*="font-size:"] {
+  font-size: revert !important;
+}
+
+.editor-container [style*="font-weight:"] {
+  font-weight: revert !important;
+}
+
+.editor-container [style*="font-family:"] {
+  font-family: revert !important;
+}
+
+/* Imported DOCX content specific styles */
+.imported-docx-content * {
+  color: inherit !important;
+}
+
+.imported-docx-content [data-original-color] {
+  color: var(--original-color) !important;
+}
+
+.imported-docx-content [data-text-color] {
+  color: var(--text-color) !important;
+}
+
+/* Ensure headings preserve their formatting */
+.editor-container h1,
+.editor-container h2,
+.editor-container h3,
+.editor-container h4,
+.editor-container h5,
+.editor-container h6 {
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  margin: inherit !important;
+}
+
+.editor-container h1[style],
+.editor-container h2[style],
+.editor-container h3[style],
+.editor-container h4[style],
+.editor-container h5[style],
+.editor-container h6[style] {
+  all: revert !important;
+}
+
+/* Preserve paragraph formatting */
+.editor-container p {
+  color: inherit !important;
+  font-size: inherit !important;
+  margin: inherit !important;
+}
+
+.editor-container p[style] {
+  all: revert !important;
+}
+
+/* Preserve span formatting */
+.editor-container span {
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+}
+
+.editor-container span[style] {
+  all: revert !important;
+}
+
+/* Table formatting preservation */
+.editor-container table {
+  border-collapse: collapse !important;
+  color: inherit !important;
+}
+
+.editor-container td,
+.editor-container th {
+  border: inherit !important;
+  padding: inherit !important;
+  color: inherit !important;
+}
+
+.editor-container td[style],
+.editor-container th[style] {
+  all: revert !important;
+}
+
+/* Text formatting elements */
+.editor-container strong,
+.editor-container b {
+  font-weight: bold !important;
+  color: inherit !important;
+}
+
+.editor-container em,
+.editor-container i {
+  font-style: italic !important;
+  color: inherit !important;
+}
+
+.editor-container u {
+  text-decoration: underline !important;
+  color: inherit !important;
+}
+
+/* Override any default editor styles that might interfere */
+.editor-container .PlaygroundEditorTheme__paragraph {
+  color: inherit !important;
+}
+
+.editor-container .PlaygroundEditorTheme__text {
+  color: inherit !important;
+}
+
+.editor-container .PlaygroundEditorTheme__heading {
+  color: inherit !important;
+}
+
+/* Ensure imported content with specific colors are displayed */
+.editor-container [style*="rgb("],
+.editor-container [style*="rgba("],
+.editor-container [style*="#"] {
+  color: revert-layer !important;
+}
+
+/* Force color preservation with highest specificity */
+.editor-container *[style*="color: rgb("] {
+  color: revert-layer !important;
+}
+
+.editor-container *[style*="color:rgb("] {
+  color: revert-layer !important;
+}
+
+/* Image preservation */
+.editor-container img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.editor-container img[style] {
+  width: revert !important;
+  height: revert !important;
+  max-width: 100% !important;
+}
